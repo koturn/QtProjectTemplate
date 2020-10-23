@@ -1,0 +1,17 @@
+#ifndef @GCH_INCLUDE_GUARD_MACRO@
+#define @GCH_INCLUDE_GUARD_MACRO@
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif  /* __cplusplus */
+
+//! Commit hash string
+extern const char @GCH_VARNAME@[];
+
+#ifdef __cplusplus
+}  /* extern "C" */
+#endif  /* __cplusplus */
+
+
+#endif  /* @GCH_INCLUDE_GUARD_MACRO@ */
