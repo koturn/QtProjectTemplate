@@ -366,6 +366,47 @@ if(ENABLE_DOXYGEN)
 endif()
 
 
+get_target_property(QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
+get_filename_component(QT_BIN_DIR "${QMAKE_EXECUTABLE}" DIRECTORY)
+set(DEPLOY_DIR "Deploy")
+
+if(WIN32 OR CYGWIN OR MINGW OR MSYS)
+  set(DEPLOYQT_NAME "windeployqt")
+  find_program(
+    DEPLOYQT_PATH
+    "${DEPLOYQT_NAME}"
+    HINTS "${QT_BIN_DIR}")
+  if(NOT DEPLOYQT_PATH)
+    message(WARNING "${DEPLOYQT_NAME} was not found.")
+  endif()
+  add_custom_target(
+    deploy
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${DEPLOY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy ${BUILD_TARGET}.exe "${DEPLOY_DIR}"
+    COMMAND "${DEPLOYQT_PATH}" "${DEPLOY_DIR}/${BUILD_TARGET}.exe"
+    DEPENDS ${BUILD_TARGET}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    COMMENT "Deploying...")
+elseif(APPLE)
+  set(DEPLOYQT_NAME "macdeployqt")
+  find_program(
+    DEPLOYQT_PATH
+    "${DEPLOYQT_NAME}"
+    HINTS "${QT_BIN_DIR}")
+  if(NOT DEPLOYQT_PATH)
+    message(WARNING "${DEPLOYQT_NAME} was not found.")
+  endif()
+  add_custom_target(
+    deploy
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${DEPLOY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${BUILD_TARGET}" "${DEPLOY_DIR}"
+    COMMAND "${DEPLOYQT_PATH}" "${DEPLOY_DIR}/${BUILD_TARGET}"
+    DEPENDS ${BUILD_TARGET}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    COMMENT "Deploying...")
+endif()
+
+
 message(STATUS "Variables")
 
 foreach(VARNAME
