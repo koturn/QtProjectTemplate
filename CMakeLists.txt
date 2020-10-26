@@ -407,6 +407,50 @@ elseif(APPLE)
 endif()
 
 
+if(WIN32)
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+  install(
+    TARGETS ${BUILD_TARGET}
+    RUNTIME DESTINATION bin
+    COMPONENT applications)
+  message(STATUS "${CMAKE_CURRENT_BINARY_DIR}/${DEPLOY_DIR}/")
+  file(GLOB dlls "${CMAKE_CURRENT_BINARY_DIR}/${DEPLOY_DIR}/*.dll")
+  message(STATUS "DLLs: ${dlls}")
+  install(
+    PROGRAMS ${dlls}
+    DESTINATION bin
+    COMPONENT applications)
+  install(
+    DIRECTORY
+    "${CMAKE_CURRENT_BINARY_DIR}/${DEPLOY_DIR}/iconengines"
+    "${CMAKE_CURRENT_BINARY_DIR}/${DEPLOY_DIR}/imageformats"
+    "${CMAKE_CURRENT_BINARY_DIR}/${DEPLOY_DIR}/platforms"
+    "${CMAKE_CURRENT_BINARY_DIR}/${DEPLOY_DIR}/translations"
+    DESTINATION bin
+    COMPONENT applications)
+  include(InstallRequiredSystemLibraries)
+  install(
+    PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    DESTINATION programs
+    COMPONENT applications)
+  set(CPACK_PACKAGE_NAME "${BUILD_TARGET}")
+  set(CPACK_PACKAGE_VENDOR "koturn")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+  set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+  set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+  set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+  set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION_TWEEK}")
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "installer")
+  set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "applications (${BUILD_TARGET})")
+  # set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_BINARY_DIR}/WindowsAppIcon.ico")
+  # set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_BINARY_DIR}/WindowsAppIcon.ico")
+  set(CPACK_NSIS_MENU_LINKS "programs/${BUILD_TARGET}" "${BUILD_TARGET}")
+  include(CPack)
+  # add_dependencies(package deploy)
+endif()
+
+
 message(STATUS "Variables")
 
 foreach(VARNAME
