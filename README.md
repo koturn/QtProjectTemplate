@@ -1,7 +1,7 @@
 QtProjectTemplate
 =================
 
-[![Test status](https://travis-ci.org/koturn/QtProjectTemplate.png)](https://travis-ci.org/koturn/QtProjectTemplate "Travis CI | koturn/QtProjectTemplate")
+[![Test status](https://travis-ci.org/koturn/QtProjectTemplate.svg)](https://travis-ci.org/github/koturn/QtProjectTemplate "Travis CI | koturn/QtProjectTemplate")
 [![Test status](https://ci.appveyor.com/api/projects/status/2dk4wgtp9nqhof38?svg=true)](https://ci.appveyor.com/project/koturn/qtprojecttemplate "AppVeyor | koturn/QtProjectTemplate")
 
 
