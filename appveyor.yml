@@ -15,6 +15,10 @@ build_script:
     cmake .. -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles"
 
     cmake --build .
+
+    cmake --build . --target deploy
+
+    cmake -E tar cvf QtProjectTemplate.zip --format=zip deploy
 artifacts:
-- path: build/QtProjectTemplate.exe
+- path: build/QtProjectTemplate.zip
   name: Template Qt Project with CMake

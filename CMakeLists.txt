@@ -368,7 +368,7 @@ endif()
 
 get_target_property(QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(QT_BIN_DIR "${QMAKE_EXECUTABLE}" DIRECTORY)
-set(DEPLOY_DIR "Deploy")
+set(DEPLOY_DIR "deploy")
 
 if(WIN32 OR CYGWIN OR MINGW OR MSYS)
   set(DEPLOYQT_NAME "windeployqt")
