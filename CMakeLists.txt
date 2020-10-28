@@ -51,7 +51,8 @@ endif()
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-file(GLOB SRCS *.c *.cpp *.cxx *.cc *.h *.hpp *.hxx *.hh *.inl *.ui)
+file(GLOB SRCS *.c *.cc *.cxx *.cpp *.c++ *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx *.hpp *.h++ *.inc *.ui)
+
 add_executable(
   ${BUILD_TARGET}
   ${SRCS}
@@ -361,8 +362,8 @@ endif()
 
 option(ENABLE_DOXYGEN "Enable to generate document with Doxygen." OFF)
 if(ENABLE_DOXYGEN)
-  include(cmake/doxygen.cmake)
-  add_doxygen(${BUILD_TARGET})
+  include(cmake/Doxygen.cmake)
+  add_doxygen(TARGETS ${BUILD_TARGET})
 endif()
 
 
