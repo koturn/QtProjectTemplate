@@ -1,0 +1,20 @@
+version: 1.0.{build}
+image: Visual Studio 2019
+install:
+- cmd: '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"'
+
+- set QTDIR=C:\Qt\5.15.1\msvc2019_64
+
+- set PATH=%PATH%;%QTDIR%\bin
+build_script:
+- cmd: >-
+    mkdir build
+
+    cd build
+
+    cmake .. -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles"
+
+    cmake --build .
+artifacts:
+- path: build/QtProjectTemplate.exe
+  name: Template Qt Project with CMake

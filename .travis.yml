@@ -1,0 +1,26 @@
+sudo: false
+cache: apt
+language: cpp
+compiler:
+  - g++
+  - clang++
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-xenial-9
+      - sourceline: 'ppa:beineri/opt-qt-5.14.2-bionic'
+    update: true
+    packages:
+      - clang-9
+      - g++-9
+      - gcc-9
+      - qt514base
+      - qt514tools
+      - libgl-dev
+      - libgl1-mesa-dev
+      - mesa-common-dev
+install:
+  - if [ "$CXX" = 'g++' ]; then export CXX='g++-9'; fi
+  - if [ "$CXX" = 'clang++' ]; then export CXX='clang++-9'; fi
+script: /opt/qt514/bin/qt514-env.sh && mkdir build && cd "$_" && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$CXX" && cmake --build .
