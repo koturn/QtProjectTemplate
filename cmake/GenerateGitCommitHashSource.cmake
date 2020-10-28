@@ -32,7 +32,11 @@ function(generate_gch_sources)
     string(TOUPPER ${GCH_INCLUDE_GUARD_MACRO} GCH_INCLUDE_GUARD_MACRO)
   endif()
 
+  string(TIMESTAMP GCH_TIMESTAMP "%Y-%m-%d %H:%M:%S")
+  string(TIMESTAMP GCH_DATE "%Y-%m-%d")
+
   if(DEFINED GCH_SOURCE)
+    get_filename_component(GCH_SOURCE_FILENAME "${GCH_SOURCE}" NAME)
     get_filename_component(GCH_SOURCE_DIR "${GCH_SOURCE}" DIRECTORY)
     file(RELATIVE_PATH GCH_HEADER_RELPATH "${GCH_SOURCE_DIR}" "${GCH_HEADER}")
 
