@@ -21,7 +21,9 @@ function(add_doxygen)
     QT_TARGETS
     SOURCES
     INCLUDE_DIRECTORIES
-    COMPILE_DEFINITIONS)
+    COMPILE_DEFINITIONS
+    GENERATE_LATEX
+    HAVE_DOT)
   cmake_parse_arguments(DOXYGEN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if(NOT DOXYGEN_NAME)
@@ -34,6 +36,13 @@ function(add_doxygen)
 
   if(NOT DEFINED DOXYGEN_OUTPUT_DIRECTORY)
     set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/document")
+  endif()
+
+  if(NOT DEFINED DOXYGEN_GENERATE_LATEX)
+    set(DOXYGEN_GENERATE_LATEX "NO")
+  endif()
+  if(NOT DEFINED DOXYGEN_HAVE_DOT)
+    set(DOXYGEN_HAVE_DOT "NO")
   endif()
 
   foreach(target ${DOXYGEN_TARGETS} ${DOXYGEN_QT_TARGETS})
@@ -51,14 +60,6 @@ function(add_doxygen)
       DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       PROPERTY COMPILE_DEFINITIONS)
     list(APPEND DOXYGEN_COMPILE_DEFINITIONS ${defs})
-  endforeach(target)
-
-  set(abs_autogen_source_paths "")
-  foreach(target ${DOXYGEN_QT_TARGETS})
-    file(GLOB_RECURSE autogen_sources
-      "${CMAKE_CURRENT_BINARY_DIR}/${target}_autogen/*.cpp"
-      "${CMAKE_CURRENT_BINARY_DIR}/${target}_autogen/*.h")
-    list(APPEND abs_autogen_source_paths ${autogen_sources})
   endforeach(target)
 
   # Convert to absolute path.
@@ -105,9 +106,13 @@ function(add_doxygen)
   endforeach()
   message(STATUS "abs_input_dir_paths: ${abs_input_dir_paths}")
 
+  set(qt_autogen_targets "")
+  foreach(target ${DOXYGEN_QT_TARGETS})
+    list(APPEND qt_autogen_targets "${target}_autogen")
+  endforeach(target)
+
   # Convert lists to whitespace separated strings
   string(REPLACE ";" " " abs_source_paths_ws_splited "${abs_source_paths}")
-  string(REPLACE ";" " " abs_autogen_source_paths_ws_splited "${abs_autogen_source_paths}")
   string(REPLACE ";" " " abs_incdir_header_paths_ws_splited "${abs_incdir_header_paths}")
   string(REPLACE ";" " " abs_incdir_paths_ws_splited "${INCLUDE_DIRECTORIES}")
   string(REPLACE ";" " " defs_ws_splited "${DOXYGEN_COMPILE_DEFINITIONS}")
@@ -122,15 +127,23 @@ function(add_doxygen)
   add_custom_command(
     OUTPUT "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}/Doxyfile"
     COMMAND ${CMAKE_COMMAND}
-      -D "DOXYGEN_TEMPLATE=${DOXYGEN_CURRENT_LIST_DIR}/templates/Doxyfile.in"
-      -D "DOXY_PROJECT_INPUT=${abs_source_paths_ws_splited} ${abs_incdir_header_paths_ws_splited} ${abs_autogen_source_paths_ws_splited} "
-      -D "DOXY_PROJECT_INCLUDE_DIR=${abs_incdir_paths_ws_splited}"
-      -D "DOXY_PROJECT_PREDEFINED=${predef_spaces}"
-      -D "DOXY_PROJECT_STRIP_FROM_PATH=${CMAKE_SOURCE_DIR}"
-      -D "DOXY_DOCUMENTATION_OUTPUT_PATH=${DOXYGEN_OUTPUT_DIRECTORY}"
-      -D "DOXY_PROJECT_NAME=${DOXYGEN_NAME}"
+      -D "DOXYGEN_SCRIPT_DOXYFILE_TEMPLATE=${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxyfile.in"
+      -D "DOXYGEN_SCRIPT_DOXYFILE_DEFAULTS=${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxygenDefaults.cmake"
+      -D "DOXYGEN_SCRIPT_OUTPUT_DOXYFILE=${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}/Doxyfile"
+      -D "DOXYGEN_SCRIPT_QT_TARGETS=${DOXYGEN_QT_TARGETS}"
+      -D "DOXYGEN_SCRIPT_QT_AUTOGEN_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+      -D "DOXYGEN_GENERATE_LATEX=${DOXYGEN_GENERATE_LATEX}"
+      -D "DOXYGEN_HAVE_DOT=${DOXYGEN_HAVE_DOT}"
+      -D "DOXYGEN_PROJECT_NAME=${DOXYGEN_NAME}"
+      -D "DOXYGEN_OUTPUT_DIRECTORY=${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}"
+      -D "DOXYGEN_STRIP_FROM_PATH=${CMAKE_CURRENT_SOURCE_DIR}"
+      -D "DOXYGEN_WARN_LOGFILE=${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}.warnings"
+      -D "DOXYGEN_INPUT=${abs_source_paths_ws_splited} ${abs_incdir_header_paths_ws_splited}"
+      -D "DOXYGEN_INCLUDE_PATH=${abs_incdir_paths_ws_splited}"
+      -D "DOXYGEN_PREDEFINED=${defs_ws_splited}"
+      -D "DOXYGEN_DOCUMENTATION_OUTPUT_PATH=${DOXYGEN_OUTPUT_DIRECTORY}"
       -P "${DOXYGEN_CURRENT_LIST_DIR}/DoxygenScript.cmake"
-    DEPENDS "${DOXYGEN_CURRENT_LIST_DIR}/templates/Doxyfile.in" "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}"
+    DEPENDS "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}" ${qt_autogen_targets}
     WORKING_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}"
     COMMENT "Generating Doxyfile for ${DOXYGEN_NAME}...")
 
@@ -146,7 +159,4 @@ function(add_doxygen)
     DEPENDS "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_NAME}/index.html")
 
   add_dependencies(doxygen doxygen-${DOXYGEN_NAME})
-  foreach(target ${DOXYGEN_QT_TARGETS})
-    add_dependencies(doxygen-${DOXYGEN_NAME} "${target}_autogen")
-  endforeach(target)
 endfunction()
