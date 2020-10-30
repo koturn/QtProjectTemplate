@@ -11,6 +11,8 @@ compile_commands.json
 CTestTestfile.cmake
 CPackConfig.cmake
 CPackSourceConfig.cmake
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
 _deps
 _CPack_Packages/
 
@@ -20,6 +22,10 @@ _CPack_Packages/
 *.obj
 *.out
 *.pdb
+
+# Doxygen outputs
+html/
+*.warnings
 
 # Visual Studio Solution and Project files
 *.sln

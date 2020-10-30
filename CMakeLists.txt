@@ -363,7 +363,7 @@ endif()
 option(ENABLE_DOXYGEN "Enable to generate document with Doxygen." OFF)
 if(ENABLE_DOXYGEN)
   include(cmake/Doxygen.cmake)
-  add_doxygen(TARGETS ${BUILD_TARGET})
+  add_doxygen(QT_TARGETS ${BUILD_TARGET})
 endif()
 
 
